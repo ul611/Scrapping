@@ -1,21 +1,32 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 # Scrap Trudeau's speaches text in french and english
 
+import time
 import pandas as pd
 from bs4 import BeautifulSoup
 from requests import get
+from tqdm import tqdm
+import re
 
 
-languages = ['fr', 'en']
+start_time = time.time()
+languages = {'fr':'french', 'en':'english'}
 classname = 'field field--name-body field--type-text-with-summary field--label-hidden field--item'
 
 n = {'fr':[0, []], 'en':[0, []]}
 
 for lang in languages:
+    print(f'Start processing {languages[lang]} language...')
     lang_text = []
     webpage = get(f'https://pm.gc.ca/{lang}/videos').text
-    hrefs = [(tag.a.text, tag.a['href']) 
+    print(f'Start collecting videos hyperlinks...')
+    hrefs = [(tag.a.text, tag.a['href'])
              for tag in pd.Series(BeautifulSoup(webpage, 'lxml')("div", "invisible")).unique()]
-    for i, href in enumerate(hrefs):
+    print(f'{len(hrefs)} links were collected.')
+    print(f'Start handling video transcriptions...')
+    for href in tqdm(hrefs):
         field_name, link = href
         video_html = get('https://pm.gc.ca' + link).text
         check = BeautifulSoup(video_html, "lxml")('div', classname)[0]
@@ -25,25 +36,33 @@ for lang in languages:
                 if 'https://twitter.com/' in check.a['href']:
                     n[lang][0] += 1
                     n[lang][1] += ['https://pm.gc.ca' + link]
-                    if (i + 1) % 50 == 0:
-                        print(f'{i + 1} links checked')
                     continue
             except:
                 print('https://pm.gc.ca' + link)
-                lang_text.append(' '.join([tag.text 
-                                   for tag 
+                lang_text.append(' '.join([tag.text
+                                   for tag
                                    in BeautifulSoup(video_html,
                                                     "lxml")('div',
                                                             classname)[0].find_all(name='p')]
                                  ).replace('\xa0', '\n'))
-        if (i + 1) % 50 == 0:
-            print(f'{i + 1} links processed')
             
-        lang_text.append(' '.join([tag.text 
-                                   for tag 
+        lang_text.append('\n'.join([tag.text
+                                   for tag
                                    in BeautifulSoup(video_html,
                                                     "lxml")('div',
                                                             classname)[0].find_all(name='p')]
-                                 ).replace('\xa0', '\n'))
+                                 ).replace('\xa0', ''))
+
+    print(f'Video transcriptions in {languages[lang]} were handled.')
+    save file with all speaches text
     with open(f'Trudeau_{lang}.txt', 'w') as f:
         f.write('\n'.join(lang_text))
+    print(f'File "Trudeau_{lang}.txt" with all {languages[lang]} speaches text was saved.')
+    save links to videos without transcription
+    print(f'Number of videos without transcription ({languages[lang]}) - {n[lang][0]}.')
+    with open(f'videos_without_transcription_{lang}.txt', 'w') as f:
+        f.write('\n'.join(n[lang][1]))
+    print(f'File "videos_without_transcription_{lang}.txt" with links to {languages[lang]} videos without transcription was saved.')
+
+end_time = time.time()
+print(f'Everithing was done. Time spent - {round(end_time - start_time)} (😱) seconds.')
