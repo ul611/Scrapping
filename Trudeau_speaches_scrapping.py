@@ -65,4 +65,4 @@ for lang in languages:
     print(f'File "videos_without_transcription_{lang}.txt" with links to {languages[lang]} videos without transcription was saved.')
 
 end_time = time.time()
-print(f'Everithing was done. Time spent - {round(end_time - start_time)} (😱) seconds.')
+print(f'Everything was done. Time spent - {round(end_time - start_time)} (😱) seconds.')
