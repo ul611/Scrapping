@@ -38,7 +38,7 @@ for lang in languages:
                     n[lang][1] += ['https://pm.gc.ca' + link]
                     continue
             except:
-                print('https://pm.gc.ca' + link)
+                # print('https://pm.gc.ca' + link) # fake links
                 lang_text.append(' '.join([tag.text
                                    for tag
                                    in BeautifulSoup(video_html,
@@ -54,11 +54,11 @@ for lang in languages:
                                  ).replace('\xa0', ''))
 
     print(f'Video transcriptions in {languages[lang]} were handled.')
-    save file with all speaches text
+    #save file with all speaches text
     with open(f'Trudeau_{lang}.txt', 'w') as f:
         f.write('\n'.join(lang_text))
     print(f'File "Trudeau_{lang}.txt" with all {languages[lang]} speaches text was saved.')
-    save links to videos without transcription
+    #save links to videos without transcription
     print(f'Number of videos without transcription ({languages[lang]}) - {n[lang][0]}.')
     with open(f'videos_without_transcription_{lang}.txt', 'w') as f:
         f.write('\n'.join(n[lang][1]))
