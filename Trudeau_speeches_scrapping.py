@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Scrap Trudeau's speaches text in french and english
+# Scrap Trudeau's speeches text in french and english
 
 import time
 import pandas as pd
@@ -54,10 +54,10 @@ for lang in languages:
                                  ).replace('\xa0', ''))
 
     print(f'Video transcriptions in {languages[lang]} were handled.')
-    #save file with all speaches text
+    #save file with all speeches text
     with open(f'Trudeau_{lang}.txt', 'w') as f:
         f.write('\n'.join(lang_text))
-    print(f'File "Trudeau_{lang}.txt" with all {languages[lang]} speaches text was saved.')
+    print(f'File "Trudeau_{lang}.txt" with all {languages[lang]} speeches text was saved.')
     #save links to videos without transcription
     print(f'Number of videos without transcription ({languages[lang]}) - {n[lang][0]}.')
     with open(f'videos_without_transcription_{lang}.txt', 'w') as f:
